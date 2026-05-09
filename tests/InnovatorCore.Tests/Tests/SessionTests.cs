@@ -8,7 +8,7 @@ namespace InnovatorCore.Tests;
 public class SessionTests
 {
     [Fact]
-    public void TestSession()
+    public void Test_Default_Session()
     {
         Innovator.Client.IOM.Innovator inn = DefaultEnvConfig.GetAdminSession();
         Item identityItemType = inn.newItem("ItemType", "get");
@@ -18,7 +18,7 @@ public class SessionTests
     }
 
     [Fact]
-    public void TestHashSession()
+    public void Test_hashed_password_Session()
     {
         SessionDTO session = SessionConfig.GetSessionConfig("admin");
         string passwordHash = MakeMD5String(session.Password);
