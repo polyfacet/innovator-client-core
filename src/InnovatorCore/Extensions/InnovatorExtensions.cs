@@ -1,6 +1,7 @@
 
 public static class InnovatorExtensions
 {
+     private const int WaitRetryTimeMs = 100;
     public static Item GetUser(this Innovator.Client.IOM.Innovator inn)
     {
         return inn.GetItem("User", inn.getUserID());
@@ -21,6 +22,13 @@ public static class InnovatorExtensions
         return item.apply();
     }
 
+    public static Item GetItemByName(this Innovator.Client.IOM.Innovator inn, string itemType, string name)
+    {
+        Item item = inn.newItem(itemType, "get");
+        item.setProperty("name", name);
+        return item.apply();
+    }
+
     public static Item GetItemByConfigId(this Innovator.Client.IOM.Innovator inn,
         string itemType,
         string config_id
@@ -34,5 +42,20 @@ public static class InnovatorExtensions
         Item user = inn.GetItem("User", inn.getUserID(), "owned_by_id");
         if (user.isError()) return user;
         return inn.GetItem("Identity", user.getProperty("owned_by_id", "N/A"));
+    }
+
+    public static Item ApplyAML(this Innovator.Client.IOM.Innovator inn, string aml) {
+        Item res = inn.applyAML(aml);
+        if (IsDeadLockError(res)) {
+        System.Threading.Thread.Sleep(WaitRetryTimeMs);
+        res = inn.applyAML(aml);
+        }
+        return res;       
+    }
+
+    private static bool IsDeadLockError(Item item) {
+        if (!item.isError()) return false;
+        if (item.getErrorString().Contains("deadlock victim")) return true;
+        return false;
     }
 }
