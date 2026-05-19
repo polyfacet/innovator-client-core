@@ -5,14 +5,14 @@ public class WorkflowMap
     private Innovator.Client.IOM.Innovator Inn;
     private string _workflowMapId;
 
-    private Item _workflowMapItem;
+    public Item WorkflowMapItem;
 
     private List<ActivityTemplate>? _activityTemplates;
     public WorkflowMap(Innovator.Client.IOM.Innovator inn, string workflowMapId)
     {
         Inn = inn;
         _workflowMapId = workflowMapId;
-        _workflowMapItem = inn.GetItem("Workflow Map", workflowMapId);
+        WorkflowMapItem = inn.GetItem("Workflow Map", workflowMapId);
     }
   
     public List<ActivityTemplate> ActivityTemplates 
