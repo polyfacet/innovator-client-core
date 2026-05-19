@@ -13,6 +13,24 @@ public static class ItemExtensions {
         return rel.apply();
     }
 
+    public static Item GetRelations(this Item item, string relationshipName)
+    {
+        Innovator.Client.IOM.Innovator inn = item.getInnovator();
+        Item rels = inn.newItem(relationshipName, "get");
+        rels.setProperty("source_id", item.getID());
+        return rels.apply();
+    }
+
+    public static List<Item> ToList(this Item item)
+    {
+      if (item.isError()) throw new ApplicationException("Can not convert error item to list");
+      List<Item> list = new();
+      for (int i = 0; i < item.getItemCount(); i++)
+      {
+        list.Add(item.getItemByIndex(i));
+      }
+      return list;
+    }
     public static Item Apply(this Item item) {
         Item res = item.apply();
         if (IsDeadLockError(res)) {
@@ -42,6 +60,16 @@ public static class ItemExtensions {
           return item.getProperty(propertyName);
         }
       }
+
+    public static DateTime LastModified(this Item item)
+    {
+        string lastModifiedStr = item.getProperty("modified_on");
+        if (DateTime.TryParse(lastModifiedStr, out DateTime lastModified))
+        {
+            return lastModified;
+        }
+        return DateTime.MinValue;
+    }
 
     private static bool IsDeadLockError(Item item) {
         if (!item.isError()) return false;

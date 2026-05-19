@@ -53,6 +53,11 @@ public static class InnovatorExtensions
         return res;       
     }
 
+    public static DataModel DataModel(this Innovator.Client.IOM.Innovator inn)
+    {
+        return new DataModel(inn);
+    }
+
     private static bool IsDeadLockError(Item item) {
         if (!item.isError()) return false;
         if (item.getErrorString().Contains("deadlock victim")) return true;
