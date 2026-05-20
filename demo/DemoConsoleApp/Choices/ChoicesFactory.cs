@@ -8,6 +8,7 @@ public class ChoicesFactory
             new EcoItemTypeInfo(),
             new CreateDeleteUser(),
             new ReleasePartViaECO(),
+            new GetMembershipTree(),
             // Add more choices here
 
             new Exit()

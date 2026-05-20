@@ -142,5 +142,21 @@ public class User : InnovatorBase {
         return user.getPropertyItem("owned_by_id");
     }
 
+    public List<Item> GetGroupsForIdentity(Item userIdentity)
+    {
+        List<Item> groups = new List<Item>();
+        Item memberships = Inn.newItem("Member", "get");
+        memberships.setProperty("related_id", userIdentity.getID());
+        memberships = memberships.apply();
+        if (memberships.isError()) return groups;
+        foreach(Item membership in memberships.ToList())
+        {
+            string parentId = membership.getProperty("source_id");
+            Item parentIdentity = Inn.GetItem("Identity", parentId);
+            groups.Add(parentIdentity);
+        }
+        return groups;
+    }
+
     
 }
