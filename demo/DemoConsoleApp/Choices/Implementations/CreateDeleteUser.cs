@@ -3,13 +3,12 @@ using Users;
 
 namespace DemoConsoleApp.Choices;
 
-public class CreateDeleteUser : IChoice
+public class CreateDeleteUser : ChoiceBase
 {
-    public string Name => "Create/Delete User";
+    public override string Name => "Create/Delete User";
 
-    public void Execute(Innovator.Client.IOM.Innovator inn)
+    public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
-        // Create user with random login name
         string loginName = Generators.ShortGUID();
         LogLine($"Creating user with loginName: [blue]{loginName}[/]...");
         Item user = new User(inn).CreateUser(loginName, "test", loginName, "Doe");
@@ -17,7 +16,6 @@ public class CreateDeleteUser : IChoice
 
         LogLine($"User created with ID: [green]{user.getID()}[/]");
 
-        // Delete the user
         if (!AnsiConsole.Confirm($"Delete user [red]{user.getID()}[/]?"))
         {
             LogLine("[yellow]Delete cancelled.[/]");
@@ -29,10 +27,4 @@ public class CreateDeleteUser : IChoice
         if (ErrorHandler.HandleError(user, "deleting user")) return;
         LogLine($"User with ID: [green]{user.getID()}[/] deleted successfully.");       
     }
-
-    private static void LogLine(string markup)
-    {
-        ConsoleLog.Line(markup);     
-    }
-
 }

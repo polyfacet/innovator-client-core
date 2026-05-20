@@ -4,34 +4,34 @@ using Workflows;
 
 namespace DemoConsoleApp.Choices;
 
-public class EcoItemTypeInfo : IChoice
+public class EcoItemTypeInfo : ChoiceBase
 {
-    public string Name => "Eco Item Type Info";
+    public override string Name => "Eco Item Type Info";
 
-    public void Execute(Innovator.Client.IOM.Innovator inn)
+    public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
         ItemType ecoItemType = inn.DataModel().ItemType("Express ECO");
-        ConsoleLog.Line($"Is Workflow Enabled: [blue]{ecoItemType.IsWorkflowEnabled().ToString()}[/]");
-        ConsoleLog.Line($"ECO ItemType last modified: [blue]{ecoItemType.Item.LastModified()}[/]");
+        LogLine($"Is Workflow Enabled: [blue]{ecoItemType.IsWorkflowEnabled().ToString()}[/]");
+        LogLine($"ECO ItemType last modified: [blue]{ecoItemType.Item.LastModified()}[/]");
 
         foreach (var workflowMap in ecoItemType.WorkflowMaps())
         {
             workflowMap.WorkflowMapItem.getProperty("name");
-            ConsoleLog.Line($"Workflow Map: [blue]{workflowMap.WorkflowMapItem.getProperty("name")}[/]");
+            LogLine($"Workflow Map: [blue]{workflowMap.WorkflowMapItem.getProperty("name")}[/]");
             
             HashSet<Workflows.ActivityTemplate> activitiesAdded = new HashSet<Workflows.ActivityTemplate>();
 
 
             List<Workflows.ActivityTemplate> allActivities = workflowMap.ActivityTemplates.ToList();
-            ConsoleLog.Line($"Activities remaining to add: [yellow]{allActivities.Count}[/]");
+            LogLine($"Activities remaining to add: [yellow]{allActivities.Count}[/]");
             // Start activity
             Workflows.ActivityTemplate? startActivity = workflowMap.ActivityTemplates.ToList().FirstOrDefault(t => t.IsStart);
             if (startActivity != null)
             {
-                ConsoleLog.Line($"  Is Start Activity: [blue]{startActivity.Name}[/]");
+                LogLine($"  Is Start Activity: [blue]{startActivity.Name}[/]");
                 foreach (var path in startActivity.WorkflowMapPaths)
                 {
-                    ConsoleLog.Line($"    Workflow Map Path: [blue]{path.Name}[/], to Activity Template: [blue]{path.ToActivity.Name}[/]");
+                    LogLine($"    Workflow Map Path: [blue]{path.Name}[/], to Activity Template: [blue]{path.ToActivity.Name}[/]");
                 }
                 activitiesAdded.Add(startActivity);
                 allActivities.Remove(startActivity);                
@@ -45,10 +45,10 @@ public class EcoItemTypeInfo : IChoice
                 List<Workflows.ActivityTemplate> activitiesToAdd = GetPossibleEligibleActivities(allActivities, activitiesAdded);
                 foreach (var activityTemplate in activitiesToAdd)
                 {
-                    ConsoleLog.Line($"  Activity Template: [blue]{activityTemplate.Name}[/]");
+                    LogLine($"  Activity Template: [blue]{activityTemplate.Name}[/]");
                     foreach (var path in activityTemplate.WorkflowMapPaths)
                     {
-                        ConsoleLog.Line($"    Workflow Map Path: [blue]{path.Name}[/], to Activity Template: [blue]{path.ToActivity.Name}[/]");
+                        LogLine($"    Workflow Map Path: [blue]{path.Name}[/], to Activity Template: [blue]{path.ToActivity.Name}[/]");
                     }
                     activitiesAdded.Add(activityTemplate);
                     allActivities.Remove(activityTemplate);
