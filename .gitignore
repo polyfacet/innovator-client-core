@@ -57,3 +57,4 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+tests/InnovatorCore.Tests/.github/copilot-instructions.md
