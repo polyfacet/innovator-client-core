@@ -13,4 +13,9 @@ public class ChoicesFactory
             new Exit()
         };
     }
+
+    public static Dictionary<string, IChoice> GetChoicesDictionary()
+    {
+        return GetChoices().ToDictionary(c => c.Name, c => c);
+    }
 }
