@@ -9,6 +9,7 @@ public class ChoicesFactory
             new CreateDeleteUser(),
             new ReleasePartViaECO(),
             new GetMembershipTree(),
+            new PackageManagementDemo(),
             // Add more choices here
 
             new Exit()

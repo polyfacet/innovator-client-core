@@ -13,4 +13,9 @@ public class DataModel
         return new ItemType(Inn, itemTypeName);
     }
     
+    public Packages Packages()
+    {
+        return new Packages(Inn);
+    }
+    
 }

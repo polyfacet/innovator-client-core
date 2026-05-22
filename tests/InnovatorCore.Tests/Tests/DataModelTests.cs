@@ -55,4 +55,121 @@ public class DataModelTests
         });
 
     }
+
+    [Fact]
+    public void DataModel_Packages_Demo_Test()
+    {
+        Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
+        
+        Item partItemType = inn.GetItemByName("ItemType", "Part");
+        PackageInfo partPackageInfo = inn.DataModel().Packages().GetInfo(partItemType);
+                
+        string expectedPackageElementName = "Part";
+        Assert.Equal(expectedPackageElementName, partPackageInfo.PackageElementName);
+        DateTime expectedCreatedOnAfter = new DateTime(2024, 1, 1);
+        Assert.True(partPackageInfo.PackageElementCreatedOn > expectedCreatedOnAfter);
+        string expectedPackageGroup = "ItemType";
+        Assert.Equal(expectedPackageGroup, partPackageInfo.PackageGroup);
+        string expectedPackageName = "com.aras.innovator.solution.PLM";
+        Assert.Equal(expectedPackageName, partPackageInfo.PackageName);
+    }
+
+    [Fact]
+    public void Packages_AddNewPackage_CreatesPackage_Successfully()
+    {
+        Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
+        string testPackageName = "TestPackage_" + Guid.NewGuid().ToString().Substring(0, 8);
+
+        inn.DataModel().Packages().AddNewPackage(testPackageName);
+
+        // Verify that the package was created
+        Item packageDefinition = inn.GetItemByName("PackageDefinition", testPackageName);
+        Assert.NotNull(packageDefinition);
+        Assert.False(packageDefinition.isError());
+        Assert.Equal(testPackageName, packageDefinition.getProperty("name"));
+
+        // Clean up - delete the created package
+        packageDefinition.apply("delete");
+
+    }
+
+    [Fact]
+    public void Packages_AddNewPackage_SkipsIfExists()
+    {
+        Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
+        string testPackageName = "TestPackageSkip_" + Guid.NewGuid().ToString().Substring(0, 8);
+
+        // Create the package first
+        inn.DataModel().Packages().AddNewPackage(testPackageName);
+        Item firstPackage = inn.GetItemByName("PackageDefinition", testPackageName);
+        string firstId = firstPackage.getID();
+
+        // Try to create again with skipIfExists = true
+        inn.DataModel().Packages().AddNewPackage(testPackageName, skipIfExists: true);
+
+        // Verify the same package exists (ID should be unchanged)
+        Item secondPackage = inn.GetItemByName("PackageDefinition", testPackageName);
+        Assert.Equal(firstId, secondPackage.getID());
+
+        // Clean up - delete the created package
+        firstPackage.apply("delete");
+        secondPackage.apply("delete");
+    }
+
+    [Fact]
+    public void Packages_AddToPackage_AddsItemToPackage()
+    {
+        Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
+        string testPackageName = "TestPackageAdd_" + Guid.NewGuid().ToString().Substring(0, 8);
+
+        // Create a test package
+        inn.DataModel().Packages().AddNewPackage(testPackageName);
+
+        // Create a test method item
+        Item methodItem = inn.newItem("Method", "add");
+        methodItem.setProperty("name", "TestMethod_" + Guid.NewGuid().ToString().Substring(0, 8));
+        methodItem.setProperty("method_type", "Server");
+        methodItem.setProperty("method_code", "return 'test';");
+        methodItem = methodItem.apply();
+
+        Assert.False(methodItem.isError());
+
+        // Add the method to the package
+        inn.DataModel().Packages().AddToPackage(methodItem, testPackageName);
+
+        // Verify the method is now in the package
+        PackageInfo packageInfo = inn.DataModel().Packages().GetInfo(methodItem);
+        Assert.Equal(testPackageName, packageInfo.PackageName);
+        Assert.Equal("Method", packageInfo.PackageGroup);
+
+        // Clean up - delete the created package and method
+        methodItem.apply("delete");
+        Item packageDefinition = inn.GetItemByName("PackageDefinition", testPackageName);
+        packageDefinition.apply("delete");
+
+    }
+
+    [Fact]
+    public void List_All_Packages()
+    {
+        Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
+        var packages = inn.DataModel().Packages().ListAll();
+        Assert.NotNull(packages);
+        Assert.True(packages.Count > 0);
+        Console.WriteLine("Packages:");
+        // packages.ForEach(p => Console.WriteLine($"- {p.getProperty("name")} (ID: {p.getID()})"));
+        packages.ForEach(p => Console.WriteLine($"- {p.getProperty("name")}"));
+    }
+
+    [Fact]
+    public void Find_Core_Package_Definition()
+    {
+        Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
+        string corePackageName = "com.aras.innovator.core";
+        Item packageDefinition = inn.DataModel().Packages().FindPackageDefinition(corePackageName);
+        Assert.NotNull(packageDefinition);
+        Assert.False(packageDefinition.isError());
+        Assert.Equal(corePackageName, packageDefinition.getProperty("name"));
+        Console.WriteLine($"Found core package definition: {packageDefinition.getProperty("name")} (ID: {packageDefinition.getID()}) (Created on: {packageDefinition.getProperty("created_on")})");
+    }
 }

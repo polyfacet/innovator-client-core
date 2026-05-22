@@ -32,7 +32,7 @@ static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<str
 {
     var val = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
-            .Title("What do you want to do?")
+            .Title("\n What do you want to do?")
             .PageSize(maxItemsPerPage)
             .AddChoices(choicesDict.Keys));
 
