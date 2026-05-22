@@ -9,48 +9,56 @@ public class ReleasePartViaECO : ChoiceBase
 
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
-        // Create a new Part
-        Item partItem = inn.newItem("Part", "add");
-        partItem.setProperty("item_number", "Test Part " + Generators.ShortGUID());
-        partItem.setProperty("name", "Test Part");
-        partItem = partItem.apply();
-        if (ErrorHandler.HandleError(partItem, "creating part")) return;
-        LogLine($"Created Part with item number: [green]{partItem.getProperty("item_number")}[/]");
+        AnsiConsole.Status()
+        .AutoRefresh(true)
+        .Spinner(Spinner.Known.Dots10)
+        .Start("[yellow]Initializing[/]", ctx =>
+        {
+            // Create a new Part
+            Item partItem = inn.newItem("Part", "add");
+            partItem.setProperty("item_number", "Test Part " + Generators.ShortGUID());
+            partItem.setProperty("name", "Test Part");
+            partItem = partItem.apply();
+            if (ErrorHandler.HandleError(partItem, "creating part")) return;
+            LogLine($"Created Part with item number: [green]{partItem.getProperty("item_number")}[/]");
 
-        // Create a new ECO
-        Item ecoItem = inn.newItem("Express ECO", "add");
-        ecoItem.setProperty("title", "Test ECO " + Generators.ShortGUID());
-        ecoItem.setProperty("item_number", "Test ECO " + Generators.ShortGUID());
-        ecoItem = ecoItem.apply();
-        if (ErrorHandler.HandleError(ecoItem, "creating ECO")) return;
-        LogLine($"Created ECO with item number: [green]{ecoItem.getProperty("item_number")}[/]");
+            // Create a new ECO
+            Item ecoItem = inn.newItem("Express ECO", "add");
+            ecoItem.setProperty("title", "Test ECO " + Generators.ShortGUID());
+            ecoItem.setProperty("item_number", "Test ECO " + Generators.ShortGUID());
+            ecoItem = ecoItem.apply();
+            if (ErrorHandler.HandleError(ecoItem, "creating ECO")) return;
+            LogLine($"Created ECO with item number: [green]{ecoItem.getProperty("item_number")}[/]");
 
-        // Add the Part to the ECO
-        ECO eco = new ECO(ecoItem);
-        Item affectedItem = eco.AddAffectedItem(partItem, "Release");
-        if (ErrorHandler.HandleError(affectedItem, "adding affected item to ECO")) return;
-        LogLine($"Added Part [blue]{partItem.getProperty("item_number")}[/] to ECO [blue]{ecoItem.getProperty("item_number")}[/] with change type 'Release'.");
+            // Add the Part to the ECO
+            ECO eco = new ECO(ecoItem);
+            Item affectedItem = eco.AddAffectedItem(partItem, "Release");
+            if (ErrorHandler.HandleError(affectedItem, "adding affected item to ECO")) return;
+            LogLine($"Added Part [blue]{partItem.getProperty("item_number")}[/] to ECO [blue]{ecoItem.getProperty("item_number")}[/] with change type 'Release'.");
 
-        // Release the ECO via signoffs
-        LogLine($"Releasing ECO [blue]{ecoItem.getProperty("item_number")}[/] via signoffs...");
-        LogLine("Signing off first ...");
-        Item signOffResult = eco.SignOff("");
-        if (ErrorHandler.HandleError(signOffResult, "initial sign off")) return;
-        Item claimResult = eco.ClaimSignOffs("Start Work", inn);
-        if (ErrorHandler.HandleError(claimResult, "claiming sign off")) return;
-        LogLine("Signing off 'Start Work'...");
-        signOffResult = eco.SignOff("Start Work");
-        if (ErrorHandler.HandleError(signOffResult, "signing off")) return;
-        claimResult = eco.ClaimSignOffs("Close Change", inn);
-        if (ErrorHandler.HandleError(claimResult, "claiming sign off")) return;
-        LogLine("Signing off 'Close Change'...");
-        signOffResult = eco.SignOff("Close Change");
-        if (ErrorHandler.HandleError(signOffResult, "signing off")) return;
+            ctx.Status("[bold blue]Processing workflow[/]");
+            ctx.Spinner(Spinner.Known.Arrow3);
+            // Release the ECO via signoffs
+            LogLine($"Releasing ECO [blue]{ecoItem.getProperty("item_number")}[/] via signoffs...");
+            LogLine("Signing off first ...");
+            Item signOffResult = eco.SignOff("");
+            if (ErrorHandler.HandleError(signOffResult, "initial sign off")) return;
+            Item claimResult = eco.ClaimSignOffs("Start Work", inn);
+            if (ErrorHandler.HandleError(claimResult, "claiming sign off")) return;
+            LogLine("Signing off 'Start Work'...");
+            signOffResult = eco.SignOff("Start Work");
+            if (ErrorHandler.HandleError(signOffResult, "signing off")) return;
+            claimResult = eco.ClaimSignOffs("Close Change", inn);
+            if (ErrorHandler.HandleError(claimResult, "claiming sign off")) return;
+            LogLine("Signing off 'Close Change'...");
+            signOffResult = eco.SignOff("Close Change");
+            if (ErrorHandler.HandleError(signOffResult, "signing off")) return;
 
-        string configId = partItem.getProperty("config_id", "N/A");
-        Item releasedPart = inn.GetItemByConfigId("Part", configId);
-       
-        LogLine($"Part [blue]{partItem.getProperty("item_number")}[/] is now in state: [green]{releasedPart.getProperty("state", "N/A")}[/].");        
+            string configId = partItem.getProperty("config_id", "N/A");
+            Item releasedPart = inn.GetItemByConfigId("Part", configId);
+        
+            LogLine($"Part [blue]{partItem.getProperty("item_number")}[/] is now in state: [green]{releasedPart.getProperty("state", "N/A")}[/].");        
+        });
     }
 
     
