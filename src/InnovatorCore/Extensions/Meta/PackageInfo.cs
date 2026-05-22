@@ -1,5 +1,3 @@
-using System;
-
 public class PackageInfo
 {
     public string PackageName { get; set; } = string.Empty;

@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using Innovator.Client.IOM;
-
-namespace Extensions;
+﻿namespace Extensions;
 public static class ItemExtensions {
 
     private const int WaitRetryTimeMs = 100;
