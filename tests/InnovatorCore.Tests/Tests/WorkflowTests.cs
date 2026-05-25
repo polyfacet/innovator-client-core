@@ -17,15 +17,15 @@ public class WorkflowTests
         Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
         Item workflowMapItem = inn.GetItemByName("Workflow Map", "Express ECO");
         WorkflowMap workflowMap = new WorkflowMap(inn, workflowMapItem.getID());
-        Assert.NotNull(workflowMap);
         Assert.NotEmpty(workflowMap.ActivityTemplates);
-        foreach (var item in workflowMap.ActivityTemplates)
-        {
-            Console.WriteLine(item.Name);
-            item.WorkflowMapPaths.ForEach(
-                path => 
-                Console.WriteLine($"  Path: {path.Name}, To Activity: {path.ToActivity.Name}"));
-        }
+        Assert.True(workflowMap.ActivityTemplates.Count > 5); // I don't know the exact, but it should be at least 5
+        // foreach (var item in workflowMap.ActivityTemplates)
+        // {
+        //     Console.WriteLine(item.Name);
+        //     item.WorkflowMapPaths.ForEach(
+        //         path =>
+        //         Console.WriteLine($"  Path: {path.Name}, To Activity: {path.ToActivity.Name}"));
+        // }
      }
 
      [Fact]

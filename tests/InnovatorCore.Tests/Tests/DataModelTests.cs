@@ -75,7 +75,7 @@ public class DataModelTests
     }
 
     [Fact]
-    public void Packages_AddNewPackage_CreatesPackage_Successfully()
+    public void AddNewPackage_creates_package()
     {
         Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
         string testPackageName = "TestPackage_" + Guid.NewGuid().ToString().Substring(0, 8);
@@ -94,7 +94,7 @@ public class DataModelTests
     }
 
     [Fact]
-    public void Packages_AddNewPackage_SkipsIfExists()
+    public void AddNewPackage_skips_if_exists()
     {
         Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
         string testPackageName = "TestPackageSkip_" + Guid.NewGuid().ToString().Substring(0, 8);
@@ -117,7 +117,7 @@ public class DataModelTests
     }
 
     [Fact]
-    public void Packages_AddToPackage_AddsItemToPackage()
+    public void AddToPackage_Adds_Item_to_package()
     {
         Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
         string testPackageName = "TestPackageAdd_" + Guid.NewGuid().ToString().Substring(0, 8);
@@ -150,7 +150,7 @@ public class DataModelTests
     }
 
     [Fact]
-    public void List_All_Packages()
+    public void ListAll_Packages_Test()
     {
         Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
         var packages = inn.DataModel().Packages().ListAll();
@@ -162,7 +162,7 @@ public class DataModelTests
     }
 
     [Fact]
-    public void Find_Core_Package_Definition()
+    public void Find_core_package_definition_Test()
     {
         Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
         string corePackageName = "com.aras.innovator.core";
