@@ -4,28 +4,43 @@ using Extensions;
 public class ItemType
 {
     private Innovator.Client.IOM.Innovator Inn;
-    private string _itemTypeName;
 
     public Item Item { get; private set; }
+    public string Name {get; private set;}
 
     public ItemType(Innovator.Client.IOM.Innovator inn, string itemTypeName)
     {
         Inn = inn;
-        _itemTypeName = itemTypeName;
-        Item = Inn.GetItemByName("ItemType", _itemTypeName);
+        Name = itemTypeName;
+        Item = Inn.GetItemByName("ItemType", Name);
     }
 
     public ArasProperty Property(string propertyName)
     {
-        return new ArasProperty(Inn, _itemTypeName, propertyName);
+        return new ArasProperty(Inn, Name, propertyName);
     }
 
     public List<ArasProperty> Properties()
     {
         Item propertyRels = Item.GetRelations("Property");
         return propertyRels.ToList().Select(
-            p => new ArasProperty(Inn, _itemTypeName, p.getProperty("name"))
+            p => new ArasProperty(Inn, Name, p.getProperty("name"))
         ).ToList();
+    }
+
+    public List<ServerEvent> ServerEvents()
+    {
+        List<ServerEvent> serverEvents = new();
+        Item serverEventItems = Inn.newItem("Server Event", "get");
+        serverEventItems.setProperty("source_id", Item.getID());
+        serverEventItems = serverEventItems.apply();
+        foreach (var serverEventItem in serverEventItems)
+        {
+            string trigger = serverEventItem.getProperty("server_event");
+            DateTime createdOn = DateTime.Parse(serverEventItem.getProperty("created_on"));
+            serverEvents.Add(new ServerEvent(Name, serverEventItem.getPropertyAttribute("related_id", "keyed_name") ,trigger, createdOn));
+        }
+        return serverEvents;
     }
 
     public bool IsWorkflowEnabled()

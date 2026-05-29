@@ -4,23 +4,33 @@ using Workflows;
 
 namespace DemoConsoleApp.Choices;
 
-public class EcoItemTypeInfo : ChoiceBase
+public class ItemTypeInfo : ChoiceBase
 {
-    public override string Name => "Eco Item Type Info";
+    public override string Name => "Item Type Info";
 
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
-        ItemType ecoItemType = inn.DataModel().ItemType("Express ECO");
-        LogLine($"Is Workflow Enabled: [blue]{ecoItemType.IsWorkflowEnabled().ToString()}[/]");
-        LogLine($"ECO ItemType last modified: [blue]{ecoItemType.Item.LastModified()}[/]");
+        List<string> itemTypeNames = new List<string>();
+        itemTypeNames.Add("Express ECO");
+        itemTypeNames.Add("Part");
+        var selectedItemTypeName = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title("\n Select an item type:")
+            .AddChoices(itemTypeNames));
 
-        foreach (var workflowMap in ecoItemType.WorkflowMaps())
+        
+        ItemType itemType = inn.DataModel().ItemType(selectedItemTypeName);
+        LogLine($"Is Workflow Enabled: [blue]{itemType.IsWorkflowEnabled().ToString()}[/]");
+        LogLine($"Item Type last modified: [blue]{itemType.Item.LastModified()}[/]");
+        
+        PrintServerEvents(itemType.ServerEvents());
+
+        foreach (var workflowMap in itemType.WorkflowMaps())
         {
             workflowMap.WorkflowMapItem.getProperty("name");
             LogLine($"Workflow Map: [blue]{workflowMap.WorkflowMapItem.getProperty("name")}[/]");
             
             HashSet<Workflows.ActivityTemplate> activitiesAdded = new HashSet<Workflows.ActivityTemplate>();
-
 
             List<Workflows.ActivityTemplate> allActivities = workflowMap.ActivityTemplates.ToList();
             LogLine($"Activities remaining to add: [yellow]{allActivities.Count}[/]");
@@ -55,6 +65,24 @@ public class EcoItemTypeInfo : ChoiceBase
                 }
             }
         }
+    }
+
+    private void PrintServerEvents(List<ServerEvent> serverEvents)
+    {
+        LogLine("Server events:");
+        var table = new Table()
+            .Border(TableBorder.Rounded)
+            .BorderColor(Color.Green)
+            .AddColumn(new TableColumn("[u]Method Name[/]"))
+            .AddColumn(new TableColumn("[u]Event[/]"))
+            .AddColumn(new TableColumn("[u]Created On[/]"));
+        foreach (var serverEvent in serverEvents)
+        {
+            table.AddRow(serverEvent.MethodName, serverEvent.ServerEventTrigger, serverEvent.CreatedOn.ToString("s"));
+        }
+
+        AnsiConsole.Write(
+            Align.Left(table));     
     }
 
     private List<ActivityTemplate> GetPossibleEligibleActivities(List<ActivityTemplate> allActivities, HashSet<ActivityTemplate> activitiesAdded)

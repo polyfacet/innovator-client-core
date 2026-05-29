@@ -12,10 +12,16 @@ public class DataModel
     {
         return new ItemType(Inn, itemTypeName);
     }
-    
+
+    public Method Method(Item methodItem)
+    {
+        return new Method(methodItem);
+    }
+
     public Packages Packages()
     {
         return new Packages(Inn);
     }
     
 }
+

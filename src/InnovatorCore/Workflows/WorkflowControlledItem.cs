@@ -1,10 +1,10 @@
 using Users;
 
 namespace Workflows;
-public abstract class WorkflowControlledItem : InnovatorBase
+public abstract class WorkflowControlledItem : ItemBase
 {
     public readonly Item SourceItem;
-    public WorkflowControlledItem(Item sourceItem) : base(sourceItem.getInnovator())
+    public WorkflowControlledItem(Item sourceItem) : base(sourceItem)
     {
         SourceItem = sourceItem;
     }

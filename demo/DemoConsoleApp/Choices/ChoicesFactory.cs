@@ -5,12 +5,13 @@ public class ChoicesFactory
     {
         return new List<IChoice>
         {            
-            new EcoItemTypeInfo(),
+            new ItemTypeInfo(),
             new CreateDeleteUser(),
             new ReleasePartViaECO(),
             new GetMembershipTree(),
             new PackageManagementDemo(),
             new ExportMethod(),
+            new MethodWhereUsed(),
             // Add more choices here
 
             new Exit()

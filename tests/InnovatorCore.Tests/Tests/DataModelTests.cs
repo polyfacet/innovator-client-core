@@ -173,6 +173,51 @@ public class DataModelTests
         Assert.Equal(corePackageName, packageDefinition.getProperty("name"));
         Console.WriteLine($"Found core package definition: {packageDefinition.getProperty("name")} (ID: {packageDefinition.getID()}) (Created on: {packageDefinition.getProperty("created_on")})");
     }
+
+
+    /// <summary>
+    /// This test demonstrates how to use the Method.UsedIn() functionality 
+    /// to find where a method is used in server events, actions, and generically in the system. 
+    ///  This serves as an example of how to use hte Method.UsedIn()
+    /// </summary>
+    [Fact]
+    public void Method_whereUsed_Test()
+    {
+        Innovator.Client.IOM.Innovator inn = _fixture.GetAdminInn();
+        List<string> expectedInItemTypes = ["Part", "CAD", "Document"];
+        List<string> actualInItemTypes = new();
+
+        Item methodItem = inn.GetItemByName("Method", "PE_AffectedItemFloat");
+
+        Method method = new Method(methodItem);
+        var serverEvents = method.UsedIn().ServerEvents();
+        foreach (var serverEvent in serverEvents)
+        {
+            Console.WriteLine($"Item Type: {serverEvent.ItemType} , on: {serverEvent.ServerEventTrigger}, Created On: {serverEvent.CreatedOn.ToString("s")}");
+            actualInItemTypes.Add(serverEvent.ItemType);
+        }
+
+        foreach (var itemType in expectedInItemTypes)
+        {
+            Assert.Contains(itemType, actualInItemTypes);
+        }
+
+        Item methodItem2 = inn.GetItemByName("Method", "PE_ManualRelease");
+        Method method2 = new Method(methodItem2);
+        var actions = method2.UsedIn().Actions();
+        foreach (var action in actions)
+        {
+            Console.WriteLine("Action name: " + action.Name);
+            Console.WriteLine("In item types:");
+            foreach (var itemType in action.ItemTypes)
+            {
+                Console.WriteLine(itemType.Name);
+            }
+        }
+
+        method.UsedIn().GenericUsedIn().ForEach(s => Console.WriteLine("Generic used in: " + s));
+
+    }
     
     private static Item CreateTestMethod(Innovator.Client.IOM.Innovator inn)
     {
