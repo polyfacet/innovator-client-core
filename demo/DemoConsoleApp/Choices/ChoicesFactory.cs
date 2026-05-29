@@ -10,6 +10,7 @@ public class ChoicesFactory
             new ReleasePartViaECO(),
             new GetMembershipTree(),
             new PackageManagementDemo(),
+            new ExportMethod(),
             // Add more choices here
 
             new Exit()
