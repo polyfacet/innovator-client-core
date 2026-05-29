@@ -140,4 +140,9 @@ public class Packages
         Item packageDefinition = Inn.GetItemByName("PackageDefinition", packageName);
         return packageDefinition;
     }
+
+    public Export Export(string exportDir)
+    {
+        return new Export(Inn, exportDir);
+    }
 }

@@ -1,0 +1,10 @@
+﻿<AML>
+ <Item type="Method" id="C36973655A7949D2A13BA91161D662E2" action="add">
+  <execution_allowed_to keyed_name="Administrators" type="Identity">2618D6F5A90949BAA7E920D1B04C7EE1</execution_allowed_to>
+  <method_code><![CDATA[string responseString = "Test OK";
+return this.getInnovator().newResult(responseString);
+]]></method_code>
+  <method_type>C#</method_type>
+  <name>HC_Test_CsharpMethod</name>
+ </Item>
+</AML>

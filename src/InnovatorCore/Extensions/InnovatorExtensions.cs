@@ -58,6 +58,17 @@ public static class InnovatorExtensions
         return new DataModel(inn);
     }
 
+    public static Item GetFirstGeneration(this Innovator.Client.IOM.Innovator inn, Item item)
+    {
+        if (item == null) return inn.newError("Item is null: cannot get first generation");
+        if (item.isError()) return item;
+
+        Item firstGenRequest = inn.newItem(item.getType(), "get");
+        firstGenRequest.setID(item.getProperty("config_id"));
+        Item firstGenResponse = firstGenRequest.apply();
+        return firstGenResponse;
+    }
+
     private static bool IsDeadLockError(Item item) {
         if (!item.isError()) return false;
         if (item.getErrorString().Contains("deadlock victim")) return true;
