@@ -25,10 +25,10 @@ AnsiConsole.MarkupLine("[green]Connected successfully![/]");
 Dictionary<string, IChoice> choicesDict = ChoicesFactory.GetChoicesDictionary();
 
 // Run the selection menu
-while (true) RunSelectionMenu(inn, choicesDict, settings.MaxItemsPerPage);
+while (true) RunSelectionMenu(inn, choicesDict, settings.MaxItemsPerPage, settings);
 
 
-static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<string, IChoice> choicesDict, int maxItemsPerPage = 10)
+static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<string, IChoice> choicesDict, int maxItemsPerPage = 10, AppSettings? appSettings = null)
 {
     var val = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
@@ -37,5 +37,6 @@ static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<str
             .AddChoices(choicesDict.Keys));
 
     AnsiConsole.MarkupLine($"You selected: [green]{val}[/]");
-    choicesDict[val].Execute(inn);
+    var choice = choicesDict[val];
+    choice.Execute(inn);
 }
