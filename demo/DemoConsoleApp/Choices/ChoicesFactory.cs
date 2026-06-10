@@ -1,3 +1,5 @@
+
+
 namespace DemoConsoleApp.Choices;
 public class ChoicesFactory
 {
@@ -12,6 +14,9 @@ public class ChoicesFactory
             new PackageManagementDemo(),
             new ExportMethod(),
             new MethodWhereUsed(),
+            new Search(),
+            new ListSavedItems(),
+            new SavedSettingsExample(),
             // Add more choices here
 
             new Exit()
