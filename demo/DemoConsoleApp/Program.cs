@@ -6,9 +6,6 @@ var config = Config.GetConfig();
 var settings = new AppSettings();
 config.GetSection("AppSettings").Bind(settings);
 
-// Initialize AppSettings to enable generic section retrieval with full path
-AppSettings.Initialize(config, Config.GetConfigFilePath());
-
 string appName = settings.ApplicationName;
 // Write fancy ASCII art title using FigletText from Spectre.Console
 AnsiConsole.Write(new FigletText(appName).Centered().Color(Color.Blue));

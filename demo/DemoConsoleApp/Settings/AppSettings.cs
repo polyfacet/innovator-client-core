@@ -5,8 +5,8 @@ using System.Text.Json.Nodes;
 
 public class AppSettings
 {
-    private static IConfigurationRoot? _configuration;
-    private static string? _configFilePath;
+    private static IConfigurationRoot _configuration;
+    private static string _configFilePath;
     private static Dictionary<string, Dictionary<string, (string value, DateTime savedDateTime)>> _changedSections = new();
 
     public class SettingEntry
@@ -19,12 +19,16 @@ public class AppSettings
     public int MaxItemsPerPage { get; set; }
 
     /// <summary>
-    /// Initialize AppSettings with the configuration root to enable generic section retrieval
+    /// Static constructor that automatically initializes AppSettings with configuration from the application directory
     /// </summary>
-    public static void Initialize(IConfigurationRoot configuration, string configFilePath = "appsettings.json")
+    static AppSettings()
     {
-        _configuration = configuration;
-        _configFilePath = configFilePath;
+        _configuration = Config.GetConfig();
+        _configFilePath = Config.GetConfigFilePath();
+        if (!File.Exists(_configFilePath))
+        {
+            throw new InvalidOperationException("Configuration file path is not set or file does not exist.");
+        }
     }
 
     /// <summary>
@@ -35,8 +39,6 @@ public class AppSettings
     /// <returns>List of key-value pairs from the section</returns>
     public static List<KeyValuePair<string, string>> GetSectionSetting(string sectionName, string? subSectionName = null)
     {
-        if (_configuration == null)
-            throw new InvalidOperationException("AppSettings has not been initialized. Call AppSettings.Initialize(configuration) first.");
 
         var section = _configuration.GetSection(sectionName);
         
@@ -64,10 +66,6 @@ public class AppSettings
     /// <returns>List of SettingEntry objects with values and timestamps, sorted by SavedDateTime descending</returns>
     public static List<KeyValuePair<string, SettingEntry>> GetSectionSettingWithTimestamp(string sectionName, string? subSectionName = null)
     {
-        if (string.IsNullOrEmpty(_configFilePath) || !File.Exists(_configFilePath))
-            throw new InvalidOperationException("Configuration file path is not set or file does not exist.");
-        
-
         var result = new List<KeyValuePair<string, SettingEntry>>();
         
         try
@@ -173,16 +171,10 @@ public class AppSettings
     /// </summary>
     public static void SaveChanges()
     {
-        if (string.IsNullOrEmpty(_configFilePath) || !File.Exists(_configFilePath))
-            throw new InvalidOperationException("Configuration file path is not set or file does not exist.");
-
         var jsonText = File.ReadAllText(_configFilePath);
         var jsonNode = JsonNode.Parse(jsonText);
 
-        if (jsonNode == null)
-        {
-            throw new InvalidOperationException("Failed to parse appsettings.json file.");
-        }
+        if (jsonNode == null) throw new InvalidOperationException("Failed to parse appsettings.json file.");
 
         // Apply all changes
         foreach (var sectionChanges in _changedSections)
