@@ -23,10 +23,34 @@ public class MethodWhereUsed : ChoiceBase
             LogLine("Used generically in:");
             genericUsedIn.ForEach(s => LogLine($"[blue]{s}[/]", includeTimestamp: false));
         }
+        if (AnsiConsole.Confirm("Try another method?")) Execute(inn);
     }
 
     private Item AskForMethodItem(Innovator.Client.IOM.Innovator inn)
     {
+        var savedMethods = AppSettings.GetSectionSettingAsDict("SavedItems", "Method");
+        foreach (var kvp in savedMethods)
+        {
+            LogLine($"Saved Method: [blue]{kvp.Key}[/], Config ID: [blue]{kvp.Value}[/]", includeTimestamp: false);
+        }
+        if (savedMethods.Count > 0)
+        {
+            var methodNames = savedMethods.Keys.ToList();
+            methodNames.Add("Enter new method name");
+            var methodPrompt = new SelectionPrompt<string>()
+                .Title("Select a saved method or enter a new one:")
+                .AddChoices(methodNames);
+            string selectedMethod = AnsiConsole.Prompt(methodPrompt);
+            if (selectedMethod != "Enter new method name")
+            {
+                string configId = savedMethods[selectedMethod];
+                Console.WriteLine($"Retrieving method {selectedMethod} with config ID {configId}...");
+                Item methodItem1 = inn.GetItemByConfigId("Method", configId);
+                if (!methodItem1.isError()) return methodItem1;
+                LogLine($"[yellow]Failed to retrieve method {selectedMethod} by config ID. It may have been deleted or the config ID is invalid.[/]");
+            }
+        }
+
         string methodName = AnsiConsole.Ask<string>("Enter Method Name:");
         Item methodItem = inn.GetItemByName("Method", methodName);
         if (!methodItem.isError()) return methodItem;
@@ -65,4 +89,5 @@ public class MethodWhereUsed : ChoiceBase
             }
         }
     }
+    
 }

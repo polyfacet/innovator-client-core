@@ -51,11 +51,27 @@ public class AppSettings
         
         foreach (var child in section.GetChildren())
         {
-            var value = ExtractValueFromEntry(child.Value);
+            var value = GetSectionChildValue(child);
             result.Add(new KeyValuePair<string, string>(child.Key, value));
         }
 
         return result;
+    }
+
+    private static string GetSectionChildValue(IConfigurationSection section)
+    {
+        if (!string.IsNullOrEmpty(section.Value))
+        {
+            return ExtractValueFromEntry(section.Value);
+        }
+
+        var innerValueSection = section.GetSection("value");
+        if (innerValueSection.Exists() && !string.IsNullOrEmpty(innerValueSection.Value))
+        {
+            return ExtractValueFromEntry(innerValueSection.Value);
+        }
+
+        return string.Empty;
     }
 
     /// <summary>
