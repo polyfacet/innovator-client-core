@@ -38,12 +38,5 @@ static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<str
 
     AnsiConsole.MarkupLine($"You selected: [green]{val}[/]");
     var choice = choicesDict[val];
-    
-    // If the choice implements ISaveable, initialize it with AppSettings
-    if (choice is ISaveable saveable && appSettings != null)
-    {
-        saveable.InitializeSettings(appSettings);
-    }
-    
     choice.Execute(inn);
 }

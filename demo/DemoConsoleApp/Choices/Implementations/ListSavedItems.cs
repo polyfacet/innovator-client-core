@@ -4,15 +4,11 @@ using Workflows;
 
 namespace DemoConsoleApp.Choices;
 
-public class ListSavedItems : ChoiceBase, ISaveable
+public class ListSavedItems : ChoiceBase
 {
-    private AppSettings? _appSettings;
+    
     public override string Name => "List Saved Items";
-
-    public void InitializeSettings(AppSettings appSettings)
-    {
-        _appSettings = appSettings;
-    }
+    
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
         var savedItems = AppSettings.GetSectionSettingAsDictWithTimestamp("SavedItems");

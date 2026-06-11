@@ -4,15 +4,10 @@ using Workflows;
 
 namespace DemoConsoleApp.Choices;
 
-public class Search : ChoiceBase, ISaveable
+public class Search : ChoiceBase
 {
-    private AppSettings? _appSettings;
     public override string Name => "Search Items";
 
-    public void InitializeSettings(AppSettings appSettings)
-    {
-        _appSettings = appSettings;
-    }
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
         string itemTypeName = AnsiConsole.Ask<string>("Enter Item Type:");
