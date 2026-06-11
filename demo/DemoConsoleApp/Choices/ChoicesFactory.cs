@@ -16,7 +16,6 @@ public class ChoicesFactory
             new MethodWhereUsed(),
             new Search(),
             new ListSavedItems(),
-            new SavedSettingsExample(),
             // Add more choices here
 
             new Exit()
