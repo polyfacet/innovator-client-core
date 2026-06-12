@@ -14,8 +14,9 @@ public class ChoicesFactory
             new PackageManagementDemo(),
             new ExportMethod(),
             new MethodWhereUsed(),
-            new Search(),
-            new ListSavedItems(),
+            // new Search(),
+            // new ListSavedItems(),
+            new SearchListDelete(),
             // Add more choices here
 
             new Exit()

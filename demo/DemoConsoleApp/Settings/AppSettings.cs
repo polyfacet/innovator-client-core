@@ -8,6 +8,7 @@ public class AppSettings
     private static IConfigurationRoot _configuration;
     private static string _configFilePath;
     private static Dictionary<string, Dictionary<string, (string value, DateTime savedDateTime)>> _changedSections = new();
+    private static Dictionary<string, HashSet<string>> _deletedSections = new();
 
     public class SettingEntry
     {
@@ -176,6 +177,14 @@ public class AppSettings
     {
         var sectionKey = subSectionName != null ? $"{sectionName}:{subSectionName}" : sectionName;
         
+        // Record deletion so SaveChanges can remove it from the file
+        if (!_deletedSections.ContainsKey(sectionKey))
+        {
+            _deletedSections[sectionKey] = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        }
+        _deletedSections[sectionKey].Add(key);
+
+        // If there was a pending change for this key, remove it
         if (_changedSections.ContainsKey(sectionKey))
         {
             _changedSections[sectionKey].Remove(key);
@@ -192,7 +201,33 @@ public class AppSettings
 
         if (jsonNode == null) throw new InvalidOperationException("Failed to parse appsettings.json file.");
 
-        // Apply all changes
+        // Apply deletions first
+        foreach (var sectionDeletes in _deletedSections)
+        {
+            var pathParts = sectionDeletes.Key.Split(':');
+            JsonNode? currentNode = jsonNode;
+
+            // Navigate to the section; if missing, nothing to delete
+            foreach (var part in pathParts)
+            {
+                if (currentNode?[part] == null)
+                {
+                    currentNode = null;
+                    break;
+                }
+                currentNode = currentNode[part];
+            }
+
+            if (currentNode is JsonObject sectionObj)
+            {
+                foreach (var key in sectionDeletes.Value)
+                {
+                    sectionObj.Remove(key);
+                }
+            }
+        }
+
+        // Apply all additions/updates
         foreach (var sectionChanges in _changedSections)
         {
             var pathParts = sectionChanges.Key.Split(':');
@@ -229,6 +264,7 @@ public class AppSettings
         File.WriteAllText(_configFilePath, jsonString);
 
         _changedSections.Clear();
+        _deletedSections.Clear();
     }
 
     /// <summary>
