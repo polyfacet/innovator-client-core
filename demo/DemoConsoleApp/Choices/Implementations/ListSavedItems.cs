@@ -1,6 +1,7 @@
 
 using Extensions;
 using Workflows;
+using Storage.SQLite;
 
 namespace DemoConsoleApp.Choices;
 
@@ -11,7 +12,7 @@ public class ListSavedItems : ChoiceBase
     
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
-        var savedItems = AppSettings.GetSectionSettingAsDictWithTimestamp("SavedItems");
+        var savedItems = new SavedItems(InitSqLite.GetConnection()).GetItems();
         if (savedItems.Count == 0)
         {
             LogLine("[yellow]No saved items found.[/]");
@@ -19,19 +20,13 @@ public class ListSavedItems : ChoiceBase
         }
 
         LogLine("[blue]Saved Items:[/]");
-        foreach (var kvp in savedItems)
+        foreach (var itemTypeGroup in savedItems.GroupBy(item => item.ItemType))
         {
-            // LogLine($"[green]{kvp.Key}[/]: {kvp.Value.Value} (Saved: {kvp.Value.SavedDateTime:yyyy-MM-dd HH:mm:ss})");
-            var entries = AppSettings.GetSectionSettingAsDictWithTimestamp("SavedItems", kvp.Key);
-            LogLine($"[yellow]{kvp.Key}[/]:",includeTimestamp: false);
-            foreach (var entry in entries)
+            LogLine($"[yellow]{itemTypeGroup.Key}[/]:", includeTimestamp: false);
+            foreach (var item in itemTypeGroup)
             {
-                LogLine($"[green]{entry.Key}[/]: {entry.Value.Value} (Saved: {entry.Value.SavedDateTime:yyyy-MM-dd HH:mm:ss})", includeTimestamp: false);
+                LogLine($"[green]{item.Name}[/]: {item.ConfigId} (Saved: {item.SavedDateTime:yyyy-MM-dd HH:mm:ss})", includeTimestamp: false);
             }
-            
         }
-        
     }
-
-    
 }

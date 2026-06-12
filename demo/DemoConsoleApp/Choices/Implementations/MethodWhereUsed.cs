@@ -1,7 +1,5 @@
-
-
-
 using Innovator.Client.QueryModel.Functions;
+using Storage.SQLite;
 
 namespace DemoConsoleApp.Choices;
 
@@ -28,14 +26,14 @@ public class MethodWhereUsed : ChoiceBase
 
     private Item AskForMethodItem(Innovator.Client.IOM.Innovator inn)
     {
-        var savedMethods = AppSettings.GetSectionSettingAsDict("SavedItems", "Method");
-        foreach (var kvp in savedMethods)
+        var savedMethods = new SavedItems(InitSqLite.GetConnection()).GetItems("Method");
+        foreach (var savedMethod in savedMethods)
         {
-            LogLine($"Saved Method: [blue]{kvp.Key}[/], Config ID: [blue]{kvp.Value}[/]", includeTimestamp: false);
+            LogLine($"Saved Method: [blue]{savedMethod.Name}[/], Config ID: [blue]{savedMethod.ConfigId}[/]", includeTimestamp: false);
         }
         if (savedMethods.Count > 0)
         {
-            var methodNames = savedMethods.Keys.ToList();
+            var methodNames = savedMethods.Select(method => method.Name).ToList();
             methodNames.Add("Enter new method name");
             var methodPrompt = new SelectionPrompt<string>()
                 .Title("Select a saved method or enter a new one:")
@@ -43,7 +41,7 @@ public class MethodWhereUsed : ChoiceBase
             string selectedMethod = AnsiConsole.Prompt(methodPrompt);
             if (selectedMethod != "Enter new method name")
             {
-                string configId = savedMethods[selectedMethod];
+                string configId = savedMethods.Single(method => method.Name == selectedMethod).ConfigId;
                 Console.WriteLine($"Retrieving method {selectedMethod} with config ID {configId}...");
                 Item methodItem1 = inn.GetItemByConfigId("Method", configId);
                 if (!methodItem1.isError()) return methodItem1;
