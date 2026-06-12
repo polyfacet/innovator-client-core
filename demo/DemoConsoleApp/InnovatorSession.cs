@@ -3,6 +3,17 @@ public class InnovatorSession
     public static Innovator.Client.IOM.Innovator? CreateInnovatorSession(string connectionString, string connectionName = "admin")
     {
         SessionDTO session = ConvertArasConnectionStringToSessionDTO(connectionString);
+        return CreateInnovatorSession(session);
+    }
+
+    internal static Innovator.Client.IOM.Innovator? CreateInnovatorSession(ConnectionDTO defaultConnection)
+    {
+        SessionDTO session = new SessionDTO(defaultConnection.Url, defaultConnection.DB, defaultConnection.User, defaultConnection.Password);
+        return CreateInnovatorSession(session);
+    }
+
+    private static Innovator.Client.IOM.Innovator? CreateInnovatorSession(SessionDTO session)
+    {
         AnsiConsole.MarkupLine($"Preparing to connect to [green]{session.Url} : {session.Database}[/] as user [green]{session.Username}[/]...");
         Innovator.Client.IOM.Innovator? inn = null;
 
@@ -11,11 +22,12 @@ public class InnovatorSession
             .SpinnerStyle(Style.Parse("yellow"))
             .Start("Connecting to Innovator...", ctx =>
             {
-                inn = SessionManager.CreateSession(connectionName, session.Url, session.Database, session.Username, session.Password);
+                inn = SessionManager.CreateSession("DefaultConnection", session.Url, session.Database, session.Username, session.Password);
             });
 
         return inn;
     }
+
     private static SessionDTO ConvertArasConnectionStringToSessionDTO(string connectionString)
     {
         var parameters = connectionString.Split(';')
