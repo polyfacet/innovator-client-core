@@ -23,6 +23,7 @@ public class SwitchArasConnection : ChoiceBase
         var selectedName = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("\n Select a connection:")
+                .EnableSearch()
                 .AddChoices(connections.OrderBy(connection => connection.SortOrder).Select(connection => connection.Name)));
 
         var selectedConnection = connections.First(connection => connection.Name == selectedName);

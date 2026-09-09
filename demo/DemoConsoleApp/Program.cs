@@ -33,6 +33,8 @@ static Innovator.Client.IOM.Innovator RunSelectionMenu(Innovator.Client.IOM.Inno
         new SelectionPrompt<string>()
             .Title("\n What do you want to do?")
             .PageSize(maxItemsPerPage)
+            .EnableSearch()
+            .SearchPlaceholderText("Type to search...")
             .AddChoices(choicesDict.Keys));
 
     AnsiConsole.MarkupLine($"You selected: [green]{val}[/]");

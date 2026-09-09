@@ -35,6 +35,7 @@ public class ExportMethod : ChoiceBase
 
         var selectionPrompt =new SelectionPrompt<string>()
             .Title("\n Select a Method to export:")
+            .EnableSearch()
             // .PageSize(20)
             .AddChoices(methods.Keys);
         selectionPrompt.AddChoice("Exit");

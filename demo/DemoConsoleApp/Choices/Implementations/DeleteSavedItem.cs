@@ -18,6 +18,7 @@ public class DeleteSavedItem : ChoiceBase
 
         var sectionPrompt = new SelectionPrompt<string>()
             .Title("\n Select section to delete from:")
+            .EnableSearch()
             .AddChoices(sections);
         sectionPrompt.AddChoice("Cancel");
 

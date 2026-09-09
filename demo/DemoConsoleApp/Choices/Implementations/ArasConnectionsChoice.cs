@@ -17,6 +17,7 @@ public class ArasConnectionsChoice : ChoiceBase
         var selectedAction = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("\n Select connection action:")
+                .EnableSearch()
                 .AddChoices(actions));
 
         switch (selectedAction)
@@ -93,6 +94,7 @@ public class ArasConnectionsChoice : ChoiceBase
         var selectedName = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("\n Select a connection to delete:")
+                .EnableSearch()
                 .AddChoices(connections.OrderBy(connection => connection.SortOrder).Select(connection => connection.Name)));
 
         if (!AnsiConsole.Confirm($"Delete connection '{Markup.Escape(selectedName)}'?"))

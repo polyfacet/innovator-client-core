@@ -20,6 +20,7 @@ public class DemosChoice : ChoiceBase
         var selectedChoice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("\n Select a demo:")
+                .EnableSearch()
                 .AddChoices(choices.Select(choice => choice.Name)));
 
         if (selectedChoice == "Back")
