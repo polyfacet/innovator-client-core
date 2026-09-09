@@ -8,10 +8,12 @@ public class SwitchArasConnection : ChoiceBase
     public override string Name => "Switch Aras Connection";
 
     public Innovator.Client.IOM.Innovator? ConnectedInnovator { get; private set; }
+    public string? ConnectedConnectionName { get; private set; }
 
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
         ConnectedInnovator = null;
+        ConnectedConnectionName = null;
 
         var connections = new ArasConnections(InitSqLite.GetConnection()).GetConnections();
         if (connections.Count == 0)
@@ -35,6 +37,7 @@ public class SwitchArasConnection : ChoiceBase
         }
 
         ConnectedInnovator = connectedInnovator;
+        ConnectedConnectionName = selectedConnection.Name;
         AnsiConsole.MarkupLine($"[green]Switched to connection: {Markup.Escape(selectedConnection.Name)}[/]");
     }
 }

@@ -8,39 +8,73 @@ public class ArasConnectionsChoice : ChoiceBase
     public override string Name => "Aras Connections";
 
     public Innovator.Client.IOM.Innovator? ConnectedInnovator { get; private set; }
+    private ConnectionDTO? CurrentConnection { get; set; }
 
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
         ConnectedInnovator = null;
 
-        var actions = new[] { "Switch", "List", "Add", "Delete", "Back" };
-        var selectedAction = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title("\n Select connection action:")
-                .EnableSearch()
-                .AddChoices(actions));
+        CurrentConnection ??= GetConnections()
+            .OrderBy(connection => connection.SortOrder)
+            .FirstOrDefault();
 
-        switch (selectedAction)
+        while (true)
         {
-            case "List":
-                ListConnections();
-                break;
-            case "Add":
-                AddConnection();
-                break;
-            case "Switch":
-                var switchConnection = new SwitchArasConnection();
-                switchConnection.Execute(inn);
-                ConnectedInnovator = switchConnection.ConnectedInnovator;
-                break;
-            case "Delete":
-                DeleteConnection();
-                break;
-            case "Back":
-                return;
+            var actions = new[] { "Switch", "Show Current Connection Info", "List", "Add", "Delete", "Back" };
+            var selectedAction = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("\n Select connection action:")
+                    .EnableSearch()
+                    .AddChoices(actions));
+
+            switch (selectedAction)
+            {
+                case "List":
+                    ListConnections();
+                    break;
+                case "Show Current Connection Info":
+                    ShowCurrentConnectionInfo();
+                    break;
+                case "Add":
+                    AddConnection();
+                    break;
+                case "Switch":
+                    var switchConnection = new SwitchArasConnection();
+                    switchConnection.Execute(inn);
+                    if (switchConnection.ConnectedInnovator is not null)
+                    {
+                        ConnectedInnovator = switchConnection.ConnectedInnovator;
+                        CurrentConnection = GetConnections().First(connection => connection.Name == switchConnection.ConnectedConnectionName);
+                    }
+                    break;
+                case "Delete":
+                    DeleteConnection();
+                    break;
+                case "Back":
+                    return;
+            }
+        }
+    }
+
+    private void ShowCurrentConnectionInfo()
+    {
+        if (CurrentConnection is null)
+        {
+            AnsiConsole.MarkupLine("[yellow]No current connection information is available.[/]");
+            return;
         }
 
-        Execute(inn);
+        var table = new Table()
+            .Border(TableBorder.Rounded)
+            .AddColumn("Property")
+            .AddColumn("Value");
+
+        table.AddRow("Name", Markup.Escape(CurrentConnection.Name));
+        table.AddRow("URL", Markup.Escape(CurrentConnection.Url));
+        table.AddRow("Database", Markup.Escape(CurrentConnection.DB));
+        table.AddRow("User", Markup.Escape(CurrentConnection.User));
+
+        AnsiConsole.Write(table);
     }
 
     private static void ListConnections()
