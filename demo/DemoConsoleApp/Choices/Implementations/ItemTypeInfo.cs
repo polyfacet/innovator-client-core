@@ -16,6 +16,7 @@ public class ItemTypeInfo : ChoiceBase
         var selectedItemTypeName = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
             .Title("\n Select an item type:")
+            .EnableSearch()
             .AddChoices(itemTypeNames));
 
         

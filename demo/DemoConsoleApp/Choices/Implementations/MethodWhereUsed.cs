@@ -37,6 +37,7 @@ public class MethodWhereUsed : ChoiceBase
             methodNames.Add("Enter new method name");
             var methodPrompt = new SelectionPrompt<string>()
                 .Title("Select a saved method or enter a new one:")
+                .EnableSearch()
                 .AddChoices(methodNames);
             string selectedMethod = AnsiConsole.Prompt(methodPrompt);
             if (selectedMethod != "Enter new method name")

@@ -14,6 +14,7 @@ public class SearchListDelete : ChoiceBase
         var selectedAction = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
             .Title("\n Select action:")
+            .EnableSearch()
             .AddChoices(action));
         
         if (selectedAction == "Back") return;
