@@ -1,6 +1,6 @@
 
 using Extensions;
-using Workflows;
+using Storage.SQLite;
 
 namespace DemoConsoleApp.Choices;
 
@@ -10,6 +10,7 @@ public class Search : ChoiceBase
 
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
+        var savedItems = new SavedItems(InitSqLite.GetConnection());
         string itemTypeName = AnsiConsole.Ask<string>("Enter Item Type:");
         string searchTerm = AnsiConsole.Ask<string>("Enter search term for item name:");
         var items = inn.ApplyAML($@"<AML><Item type='{itemTypeName}' action='get'><name condition='like'>{searchTerm}</name></Item></AML>");
@@ -36,11 +37,10 @@ public class Search : ChoiceBase
         foreach (var fav in favorites)
         {
             var item = itemDict[fav];
-            AppSettings.AddOrUpdateSectionSetting("SavedItems", item.getProperty("name"), item.getProperty("config_id"), itemTypeName);
+            savedItems.Save(itemTypeName, item.getProperty("name"), item.getProperty("config_id"));
             LogLine($"[blue]{item.getProperty("name")}[/], Modified On: [blue]{item.getProperty("modified_on")}[/], Config ID: [blue]{item.getProperty("config_id")}[/]", includeTimestamp: false);
         }
-        AppSettings.SaveChanges();
-        LogLine("[green]Selected items saved to settings![/]");
+        LogLine("[green]Selected items saved to SQLite![/]");
 
         
     }

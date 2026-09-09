@@ -1,5 +1,4 @@
-using Extensions;
-using Workflows;
+using Storage.SQLite;
 
 namespace DemoConsoleApp.Choices;
 
@@ -9,7 +8,8 @@ public class DeleteSavedItem : ChoiceBase
 
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
-        var sections = AppSettings.GetSectionSettingAsDict("SavedItems");
+        var savedItems = new SavedItems(InitSqLite.GetConnection());
+        var sections = savedItems.GetItemTypes();
         if (sections.Count == 0)
         {
             LogLine("[yellow]No saved items to delete.[/]");
@@ -18,13 +18,13 @@ public class DeleteSavedItem : ChoiceBase
 
         var sectionPrompt = new SelectionPrompt<string>()
             .Title("\n Select section to delete from:")
-            .AddChoices(sections.Keys);
+            .AddChoices(sections);
         sectionPrompt.AddChoice("Cancel");
 
         string sectionSelection = AnsiConsole.Prompt(sectionPrompt);
         if (sectionSelection == "Cancel") return;
 
-        var entries = AppSettings.GetSectionSettingAsDict("SavedItems", sectionSelection);
+        var entries = savedItems.GetItems(sectionSelection);
         if (entries.Count == 0)
         {
             LogLine("[yellow]No leaf entries found under selected section.[/]");
@@ -34,7 +34,7 @@ public class DeleteSavedItem : ChoiceBase
         var entryPrompt = new MultiSelectionPrompt<string>()
             .Title($"\n Select one or more entries to delete from '{sectionSelection}':")
             .NotRequired()
-            .AddChoices(entries.Keys);
+            .AddChoices(entries.Select(entry => entry.Name));
 
         var selectedKeys = AnsiConsole.Prompt(entryPrompt);
 
@@ -46,10 +46,8 @@ public class DeleteSavedItem : ChoiceBase
 
         foreach (var key in selectedKeys)
         {
-            AppSettings.DeleteSectionSetting("SavedItems", key, sectionSelection);
+            savedItems.Delete(sectionSelection, key);
             LogLine($"[green]Deleted saved item: {sectionSelection}/{key}[/]", includeTimestamp: false);
         }
-
-        AppSettings.SaveChanges();
     }
 }
