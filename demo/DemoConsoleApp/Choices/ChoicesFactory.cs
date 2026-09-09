@@ -7,6 +7,7 @@ public class ChoicesFactory
     {
         return new List<IChoice>
         {            
+            new ArasConnectionsChoice(),
             new ItemTypeInfo(),
             new CreateDeleteUser(),
             new ReleasePartViaECO(),
