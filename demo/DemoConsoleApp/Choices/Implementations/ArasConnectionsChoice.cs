@@ -7,9 +7,13 @@ public class ArasConnectionsChoice : ChoiceBase
 {
     public override string Name => "Aras Connections";
 
+    public Innovator.Client.IOM.Innovator? ConnectedInnovator { get; private set; }
+
     public override void Execute(Innovator.Client.IOM.Innovator inn)
     {
-        var actions = new[] { "List", "Add", "Delete", "Back" };
+        ConnectedInnovator = null;
+
+        var actions = new[] { "Switch", "List", "Add", "Delete", "Back" };
         var selectedAction = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("\n Select connection action:")
@@ -22,6 +26,11 @@ public class ArasConnectionsChoice : ChoiceBase
                 break;
             case "Add":
                 AddConnection();
+                break;
+            case "Switch":
+                var switchConnection = new SwitchArasConnection();
+                switchConnection.Execute(inn);
+                ConnectedInnovator = switchConnection.ConnectedInnovator;
                 break;
             case "Delete":
                 DeleteConnection();
