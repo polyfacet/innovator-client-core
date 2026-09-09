@@ -24,10 +24,10 @@ if (inn == null)
 Dictionary<string, IChoice> choicesDict = ChoicesFactory.GetChoicesDictionary();
 
 // Run the selection menu
-while (true) RunSelectionMenu(inn, choicesDict, settings.MaxItemsPerPage);
+while (true) inn = RunSelectionMenu(inn, choicesDict, settings.MaxItemsPerPage);
 
 
-static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<string, IChoice> choicesDict, int maxItemsPerPage = 10)
+static Innovator.Client.IOM.Innovator RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<string, IChoice> choicesDict, int maxItemsPerPage = 10)
 {
     var val = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
@@ -38,6 +38,13 @@ static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<str
     AnsiConsole.MarkupLine($"You selected: [green]{val}[/]");
     var choice = choicesDict[val];
     choice.Execute(inn);
+
+    return choice switch
+    {
+        ArasConnectionsChoice connectionsChoice when connectionsChoice.ConnectedInnovator is not null
+            => connectionsChoice.ConnectedInnovator,
+        _ => inn
+    };
 }
 
 Innovator.Client.IOM.Innovator? GetDefaultConnectionAndConnect()
