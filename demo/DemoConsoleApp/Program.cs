@@ -24,10 +24,10 @@ if (inn == null)
 Dictionary<string, IChoice> choicesDict = ChoicesFactory.GetChoicesDictionary();
 
 // Run the selection menu
-while (true) RunSelectionMenu(inn, choicesDict, settings.MaxItemsPerPage, settings);
+while (true) RunSelectionMenu(inn, choicesDict, settings.MaxItemsPerPage);
 
 
-static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<string, IChoice> choicesDict, int maxItemsPerPage = 10, AppSettings? appSettings = null)
+static void RunSelectionMenu(Innovator.Client.IOM.Innovator inn, IDictionary<string, IChoice> choicesDict, int maxItemsPerPage = 10)
 {
     var val = AnsiConsole.Prompt(
         new SelectionPrompt<string>()

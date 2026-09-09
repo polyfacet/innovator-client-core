@@ -11,9 +11,4 @@ public class Config
         return config;
     }
 
-    public static string GetConfigFilePath()
-    {
-        return Path.Combine(AppContext.BaseDirectory, "appsettings.json");
-    }
-
 }
