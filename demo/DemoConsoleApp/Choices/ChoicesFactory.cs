@@ -8,11 +8,8 @@ public class ChoicesFactory
         return new List<IChoice>
         {            
             new ArasConnectionsChoice(),
-            new ItemTypeInfo(),
-            new CreateDeleteUser(),
-            new ReleasePartViaECO(),
+            new DemosChoice(),
             new GetMembershipTree(),
-            new PackageManagementDemo(),
             new ExportMethod(),
             new MethodWhereUsed(),
             // new Search(),
