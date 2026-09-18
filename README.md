@@ -66,8 +66,9 @@ Or, if you are consuming it from another project, add a project reference in you
 
 ```csharp
 using Connections;
+using Innovator.Client.IOM;
 
-var inn = Session.CreateSession(
+Innovator inn = Session.CreateSession(
     "https://your-aras-instance.example.com",
     "YourDatabase",
     "admin",
@@ -78,31 +79,34 @@ var inn = Session.CreateSession(
 
 ```csharp
 using Connections;
+using Innovator.Client.IOM;
 
-var inn = SessionManager.CreateSession(
+Innovator inn = SessionManager.CreateSession(
     "default",
     "https://your-aras-instance.example.com",
     "YourDatabase",
     "admin",
     "yourPassword");
 
-var sameInn = SessionManager.GetSession("default");
+Innovator sameInn = SessionManager.GetSession("default");
 ```
 
 ### Get an item by ID
 
 ```csharp
 using Extensions;
+using Innovator.Client.IOM;
 
-var item = inn.GetItem("Part", "some-part-id");
+Item item = inn.GetItem("Part", "some-part-id");
 ```
 
 ### Get an item by name
 
 ```csharp
 using Extensions;
+using Innovator.Client.IOM;
 
-var itemType = inn.GetItemByName("ItemType", "Part");
+Item itemType = inn.GetItemByName("ItemType", "Part");
 ```
 
 ### Access the data model
@@ -110,20 +114,22 @@ var itemType = inn.GetItemByName("ItemType", "Part");
 ```csharp
 using Extensions;
 
-var model = inn.DataModel();
-var partType = model.ItemType("Part");
-string itemNumberDataType = partType.Property("item_number").DataType;
+DataModel model = inn.DataModel();
+ItemType partType = model.ItemType("Part");
+ArasProperty itemNumberProperty = partType.Property("item_number");
+string itemNumberDataType = itemNumberProperty.DataType;
 ```
 
 ### Work with users
 
 ```csharp
 using Users;
+using Innovator.Client.IOM;
 
-var userHelper = new User(inn);
-var existing = userHelper.UserExists("jsmith");
+User userHelper = new User(inn);
+bool existing = userHelper.UserExists("jsmith");
 
-var created = userHelper.CreateUser("jsmith", "Password123", "Jane", "Smith");
+Item created = userHelper.CreateUser("jsmith", "Password123", "Jane", "Smith");
 ```
 
 ### Inspect workflow maps
@@ -131,8 +137,8 @@ var created = userHelper.CreateUser("jsmith", "Password123", "Jane", "Smith");
 ```csharp
 using Workflows;
 
-var workflowMap = new WorkflowMap(inn, workflowMapId);
-foreach (var activity in workflowMap.ActivityTemplates)
+WorkflowMap workflowMap = new WorkflowMap(inn, workflowMapId);
+foreach (ActivityTemplate activity in workflowMap.ActivityTemplates)
 {
     Console.WriteLine(activity.Name);
 }
