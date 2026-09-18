@@ -1,6 +1,7 @@
 ﻿using Innovator.Client.IOM;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Text;
 
 public class Workflow {
 
@@ -81,30 +82,32 @@ public class Workflow {
         
         string taskBody = "<Tasks/>";
         if (taskIds.Count > 0) {
-            taskBody = "<Tasks>";
+            StringBuilder sbTaskBody = new();
+            sbTaskBody.Append("<Tasks>");
             foreach (var taskId in taskIds)
-                taskBody += $"<Task id='{taskId}' completed='1'></Task>";
-            taskBody += "</Tasks>";
+                sbTaskBody.Append($"<Task id='{taskId}' completed='1'></Task>");
+            sbTaskBody.Append("</Tasks>");
+            taskBody = sbTaskBody.ToString();
         }
         
-        var body = "";
-        body += "<Item type='Activity' action='EvaluateActivity'>";
-        body += "<Activity>" + activityId + "</Activity>";
-        body += "<ActivityAssignment>" + assignmentId + "</ActivityAssignment>";
+        StringBuilder sbBody = new();
+        sbBody.Append("<Item type='Activity' action='EvaluateActivity'>");
+        sbBody.Append($"<Activity>{activityId}</Activity>");
+        sbBody.Append($"<ActivityAssignment>{assignmentId}</ActivityAssignment>");
 
-        body += "<Paths>";
-        body += "<Path id='" + pathId + "'></Path>";
-        body += "</Paths>";
-        body += taskBody;
-        body += "<Variables/>";
-        body += "<Authentication mode=''/>";
-        //body += "<Authentication mode='" + AuthMode + "'>" + pwdHash + "</Authentication>";
-        body += "<Comments>" + comments + "</Comments>";
-        body += "<Complete>1</Complete>";
-        body += "</Item>";
+        sbBody.Append("<Paths>");
+        sbBody.Append($"<Path id='{pathId}'></Path>");
+        sbBody.Append("</Paths>");
+        sbBody.Append(taskBody);
+        sbBody.Append("<Variables/>");
+        sbBody.Append("<Authentication mode=''/>");
+        //sbBody.Append("<Authentication mode='" + AuthMode + "'>" + pwdHash + "</Authentication>");
+        sbBody.Append($"<Comments>{comments}</Comments>");
+        sbBody.Append("<Complete>1</Complete>");
+        sbBody.Append("</Item>");
 
         var aml = "<AML>";
-        aml += body;
+        aml += sbBody.ToString();
         aml += "</AML>";
         
         return inn.ApplyAML(aml);
