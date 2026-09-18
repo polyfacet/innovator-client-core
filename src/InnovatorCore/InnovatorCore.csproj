@@ -4,6 +4,17 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <PackageId>HC.Innovator.Client.Core</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Tomas Andersson</Authors>
+    <Description>Aras Innovator extended API for .NET. Start kit for building applications with the Aras Innovator platform.</Description>
+    <RepositoryUrl>https://github.com/polyfacet/innovator-client-core</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>Aras;Innovator</PackageTags>
+    <PackageReleaseNotes>First Release</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +27,12 @@
 
   <ItemGroup>
     <Using Include="Innovator.Client.IOM" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md"
+        Pack="true"
+        PackagePath="README.md" />
   </ItemGroup>
 
 </Project>

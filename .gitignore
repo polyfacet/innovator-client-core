@@ -9,6 +9,7 @@
 
 demo/**/Exports/Test**
 TODO.md
+src/InnovatorCore/Distribution.md
 
 .vs/
 
@@ -61,3 +62,4 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 tests/InnovatorCore.Tests/.github/copilot-instructions.md
+
