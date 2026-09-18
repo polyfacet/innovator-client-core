@@ -160,6 +160,19 @@ Adds convenience methods to the Innovator instance for common operations such as
 - `ApplyAML(...)`
 - `DataModel()`
 
+### `ItemExtensions`
+
+Adds convenience methods to `Item` instances for common operations such as:
+Apply/GetProperty are wrapped in retries on *Deadlocks*.
+
+- `CreateRelation(...)`
+- `GetRelations(...)`
+- `ToList()`
+- `Apply()`
+- `Apply(...)`
+- `GetProperty(...)`
+- `LastModified()`
+
 ### `User`
 
 Provides helper methods such as:
@@ -203,7 +216,7 @@ dotnet run --project demo/DemoConsoleApp/DemoConsoleApp.csproj
 The test project is under `tests/InnovatorCore.Tests` and exercises session creation, user behavior, and workflow interactions.
 
 ```bash
-dotnet test tests/InnovatorCore.Tests/InnovatorCore.Tests.csproj
+dotnet test --project tests/InnovatorCore.Tests/InnovatorCore.Tests.csproj
 ```
 
 ## Notes
